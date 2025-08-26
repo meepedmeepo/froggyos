@@ -1,6 +1,11 @@
 #include "kernel.h"
+#include "arch/paging/paging.h"
 #include "drivers/uart.h"
 #include "drivers/vga/framebuffer.h"
+#include "limine.h"
+#include "memory/framealloc.h"
+#include "memory/memorymap.h"
+#include <stdint.h>
 
 
 static struct TTYRenderer r;
@@ -28,7 +33,26 @@ char* itoa(int value, char* result, int base) {
     return result;
 }
 
-void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font){
+char* ultoa(uint64_t value, char* result, int base) {
+  
+    if (base < 2 || base > 36) { *result = '\0'; return result; }
+    char* ptr = result, *ptr1 = result, tmp_char;
+    uint64_t tmp_value;
+    do {
+        tmp_value = value;
+        value /= base;
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+    } while ( value );
+    *ptr-- = '\0';
+    while(ptr1 < ptr) {
+        tmp_char = *ptr;
+        *ptr--= *ptr1;
+        *ptr1++ = tmp_char;
+    }
+    return result;
+}
+
+void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memmap){
   init_tty_renderer(&r,&fb, psf1_font);
   write_serial_string("tty init\n");
   global_renderer = &r;
@@ -56,12 +80,24 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font){
     //tty_print(global_renderer, "\n");
 
   
-  write_serial_string("\n");
-  write_serial_string(itoa(global_renderer->cursor_position.y, buffer, 10));
+    write_serial_string("\n");
+    write_serial_string(itoa(global_renderer->cursor_position.y, buffer, 10));
 
   
     tty_print(global_renderer, "\n");
     tty_print(global_renderer, "cum twat\n");
     
     tty_print(global_renderer, "cum twat\n");
+
+    //Setup initial frame allocator.
+    void *framesToAllocate = read_memory_map(memmap);
+    //TODO change this pls, only temporary and could blow up in my face easily if memory regions are different at all.
+    uint64_t frameAllocAddress = ((struct limine_memmap_response *)memmap)->entries[1]->base + PHYSICAL_ADDRESS_OFFSET;
+    
+    struct FreeFrameList* frameList = init_frame_list((void *)frameAllocAddress, framesToAllocate);
+
+    write_serial_string("Next Free Address: 0x");
+    char res[40];
+    write_serial_string(ultoa((uint64_t)frameList->nextFree, res, 16));
+    write_serial_string("!\n");
 }

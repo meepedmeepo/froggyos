@@ -3,6 +3,6 @@
 
 #include "drivers/vga/tty.h"
 #include "drivers/vga/framebuffer.h"
-void kernel_init(struct FrameBuffer fb, struct PSF1_FONT* psf1_font);
+void kernel_init(struct FrameBuffer fb, struct PSF1_FONT* psf1_font, void *memmap);
 
 #endif

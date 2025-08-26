@@ -4,11 +4,13 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include "arch/paging/paging.h"
 #include "limine.h"
 #include "kernel.h"
 #include "drivers/vga/tty.h"
 #include "drivers/vga/framebuffer.h"
 #include "drivers/uart.h"
+#include "memory/memorymap.h"
 // Set the base revision to 3, this is recommended as this is the latest
 // base revision described by the Limine boot protocol specification.
 // See specification for further info.
@@ -24,13 +26,25 @@ static volatile LIMINE_BASE_REVISION(3);
 __attribute__((used, section(".limine_requests")))
 static volatile struct limine_framebuffer_request framebuffer_request = {
     .id = LIMINE_FRAMEBUFFER_REQUEST,
-    .revision = 0
+    .revision = 3,
 };
 
 __attribute__((used, section(".limine_requests")))
 static volatile struct limine_module_request module_request = {
     .id = LIMINE_MODULE_REQUEST,
-    .revision = 0,   
+    .revision = 3,   
+};
+
+__attribute__((used,section(".limine_requests")))
+static volatile struct limine_memmap_request memmap_request = {
+    .id = LIMINE_MEMMAP_REQUEST,
+    .revision = 3,
+};
+
+__attribute__((used, section(".limine_requests")))
+static volatile struct limine_hhdm_request hhdm_request = {
+    .id = LIMINE_HHDM_REQUEST,
+    .revision = 3,
 };
 
 // Finally, define the start and end markers for the Limine requests.
@@ -217,13 +231,35 @@ void kmain(void) {
 
     write_serial_string("font assigned\n");
     
-  // Note: we assume the framebuffer model is RGB with 32-bit pixels.
-    for (size_t i = 0; i < 100; i++) {
-        volatile uint32_t *fb_ptr = framebuffer->address;
-        fb_ptr[i * (framebuffer->pitch / 4) + i] = 0xffffff;
+  //// Note: we assume the framebuffer model is RGB with 32-bit pixels.
+  //  for (size_t i = 0; i < 100; i++) {
+  //      volatile uint32_t *fb_ptr = framebuffer->address;
+  //      fb_ptr[i * (framebuffer->pitch / 4) + i] = 0xffffff;
+  //  }
+
+
+    
+    if (memmap_request.response == NULL) {
+        write_serial_string("MemoryMap Request failed: response is null \n");
+        hcf();
     }
+
+    
+    //memmap_request.response->entries[0]->
+
+    if (hhdm_request.response == NULL) {
+        write_serial_string("HHDM Request failed: response is null \n");
+        hcf();
+    }
+
+    uint64_t physical_address_offset = hhdm_request.response->offset;
+
+    init_paging(physical_address_offset);
+
+    
+    write_serial_string("paging init complete \n");
         
-    kernel_init(fb,&font);
+    kernel_init(fb,&font, memmap_request.response );
     write_serial_string("kernel init complete\n");
     // Note: we assume the framebuffer model is RGB with 32-bit pixels.
     /* for (size_t i = 0; i < 100; i++) {
