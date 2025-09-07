@@ -42,9 +42,9 @@ void *pop_frame_list(struct FreeFrameList *list) {
     return NULL;
   }
 
-  void *address = (void*)list->nextFree->physAddress + PHYSICAL_ADDRESS_OFFSET;
+  void *address = (void*)list->nextFree->physAddress;
 
-  if (list->nextFree - 1 != NULL) {
+  if (list->nextFree - 1 != (void*)list) {
     list->nextFree -= 1;
   } else {
     list->nextFree = NULL;
@@ -60,13 +60,12 @@ void add_frame_region(struct FreeFrameList * list, void *memmap_region) {
   struct limine_memmap_entry* region = (struct limine_memmap_entry*)memmap_region;
 
   uint64_t physAddress = region->base;
-  for (uint64_t x = 0; x < region->length/4096; x++) {
-    char res[60];
-    write_serial_string(ultoa(x,res,10));
-    write_serial_string("\n");
-    push_frame_list(list, physAddress);
-    physAddress += 4096;//TODO: change this into PAGE_SIZE macro or someshit
-
+  for (uint64_t x = 0; x < region->length; x+= 0x1000) {
+    //char res[60];
+    //write_serial_string(ultoa(x,res,10));
+    //write_serial_string("\n");
+    push_frame_list(list, physAddress + x);
+    if (list->numFrames > 100) break;
     if (x >= 30000-1) {
       break;
     }

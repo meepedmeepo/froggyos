@@ -98,6 +98,31 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memma
 
     write_serial_string("Next Free Address: 0x");
     char res[40];
-    write_serial_string(ultoa((uint64_t)frameList->nextFree, res, 16));
+    write_serial_string(ultoa(frameList->nextFree->physAddress, res, 16));
     write_serial_string("!\n");
+
+    VirtAddress virtAddr = (VirtAddress)0xffff80000008c990;
+    write_serial_string("VirtAddr written\n");
+
+    uint64_t pml4Addr = (uint64_t)read_cr3() & ~0xFFFULL;
+
+    pml4Addr += PHYSICAL_ADDRESS_OFFSET;
+    
+    char x[40];
+    write_serial_string(ultoa(pml4Addr, x, 16));
+    write_serial_string("\n");
+    uint64_t val = *(uint64_t *)pml4Addr;
+
+    char y[40];
+    write_serial_string(ultoa(val, y, 10));
+
+    write_serial_string("\n");
+    
+    map_to_page(virtAddr, pop_frame_list(frameList), frameList, NULL);
+    //create_kernel_page_tables(frameList);
+    *virtAddr = 69420;
+
+
+    char p[20];
+    tty_print(global_renderer, ultoa(*virtAddr, p, 10));
 }

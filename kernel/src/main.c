@@ -47,6 +47,13 @@ static volatile struct limine_hhdm_request hhdm_request = {
     .revision = 3,
 };
 
+__attribute__((used, section(".limine_requests")))
+static volatile struct limine_paging_mode_request paging_request = {
+    .id = LIMINE_PAGING_MODE_REQUEST,
+    .revision = 3,
+    .mode = LIMINE_PAGING_MODE_X86_64_4LVL,
+};
+
 // Finally, define the start and end markers for the Limine requests.
 // These can also be moved anywhere, to any .c file, as seen fit.
 
@@ -142,13 +149,22 @@ void *memcpy(void *restrict dest, const void *restrict src, size_t n) {
 }
 
 void *memset(void *s, int c, size_t n) {
-    uint8_t *p = (uint8_t *)s;
 
-    for (size_t i = 0; i < n; i++) {
-        p[i] = (uint8_t)c;
-    }
+    uint8_t val = (uint8_t)(c & 0xFF);
+	  uint8_t *dest2 = (uint8_t*)(s);
 
-    return s;
+    //print_ptr_address(dest2);
+    
+	  size_t i = 0;
+
+	  while(i < n)
+	{
+	  //write_serial_string("mem\n");
+		dest2[i] = val;
+		i++;
+	}
+
+	return s;
 }
 
 void *memmove(void *dest, const void *src, size_t n) {
