@@ -5,6 +5,13 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#define PAGESIZE 4096
+
+#define MIN_INITIAL_ALLOC (65536 + sizeof(struct memory_bucket_t) + sizeof(struct memory_pebble_t))
+
+#define KMALLOC_MAGIC_BUCKET 'BUCK'
+#define KMALLOC_MAGIC_PEBBLE 'ROCK'
+
 #define PEBBLE_FLAG_FREE (0 << 0) //If bit set, pebble is in use.
 #define PEBBLE_FLAG_IN_USE (1 << 0)
 #define PEBBLE_FLAG_ALIGNED (1 << 1) //If bit set, pebble is aligned.
@@ -44,8 +51,8 @@ struct memory_bucket_t {
   memory_pebble_t *first;
 
   //Double linked list of buckets.
-  memory_bucket_t *prev;
-  memory_bucket_t *next;
+  struct memory_bucket_t *prev;
+  struct memory_bucket_t *next;
 
 } typedef memory_bucket_t;
 
