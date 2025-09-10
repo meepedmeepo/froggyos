@@ -31,6 +31,7 @@ void *alloc_page(void *addr) {
   } else
   {
     //Choose address to map to.
+    return NULL;
   }
 
   void *res = map_to_page(addr, frame, vmm.frameAlloc, NULL);
@@ -39,7 +40,7 @@ void *alloc_page(void *addr) {
   return res;
 }
 
-void *mmap(size_t size) {
+void *mmap(size_t  size) {
   uintptr_t region_start = (uintptr_t)grow_heap(size);
 
   if (!region_start) {

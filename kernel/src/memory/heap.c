@@ -10,3 +10,8 @@ void init_heap() {
   
 }
 
+void *grow_heap(size_t size) {
+   acquire_spinlock(&kheap_mutex);
+
+   return NULL;
+}
