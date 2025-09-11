@@ -1,7 +1,6 @@
 #ifndef K_BUCKETALLOC_H
 #define K_BUCKETALLOC_H
 
-#include <stdatomic.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -11,6 +10,11 @@
 
 #define KMALLOC_MAGIC_BUCKET 'BUCK'
 #define KMALLOC_MAGIC_PEBBLE 'ROCK'
+
+#define BUCKET_FLAG_FIRST   (0 <<  0)  // if clear, use first find method
+#define BUCKET_FLAG_BEST    (1 <<  0)  // if set, use best fit method
+#define BUCKET_FLAG_TYPE    (0xFF << 8)  // MASK: Request Type used when allocating this bucket
+
 
 #define PEBBLE_FLAG_FREE (0 << 0) //If bit set, pebble is in use.
 #define PEBBLE_FLAG_IN_USE (1 << 0)
@@ -45,7 +49,7 @@ struct memory_bucket_t {
   size_t largest_free;//Largest free block available in bucket.
   size_t size;//Counts of 4096 pages used for bucket.
 
-  atomic_flag spinlock;
+  uint32_t spinlock;
   uint8_t reserved[12];
 
   memory_pebble_t *first;
@@ -84,7 +88,7 @@ void *kmalloc(size_t size, uint32_t alignment, uint32_t flags);
 void *krealloc(void *ptr, size_t size);
 void kfree(void * ptr);
 
-
+//Creates first bucket and returns pointer to it.
 void *kmalloc_init(size_t size);
 
 

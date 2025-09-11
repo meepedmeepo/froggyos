@@ -8,6 +8,7 @@ static struct VirtualMemoryManager vmm;
 
 void init_vmm(struct FreeFrameList *pmm) {
   vmm.frameAlloc = pmm;
+  write_serial_string("VMM Initialised.\n");
 }
 
 
@@ -24,13 +25,13 @@ void *get_physical_frame_addr() {
 
 void *alloc_page(void *addr) {
   void *frame = get_physical_frame_addr();
+
+  if (!frame) return NULL;//Frame list empty so operation fails.
+  //TODO: implement debugging messages for when this occurs.
   
-  if (addr) {
-    //Map to requested address
-    
-  } else
-  {
-    //Choose address to map to.
+  if (!addr) {
+    //No address chosen, address to map to selected randomly-ish.
+    // TODO: implement selecting new address.
     return NULL;
   }
 
