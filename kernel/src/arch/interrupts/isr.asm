@@ -1,13 +1,15 @@
+section .text
+
 %macro isr_err_stub 1
-isr_stub_%+%1:
+isr_stub_%1:
         push %1
-        pus r15
+        push r15
         lea r15, [rel isr_xframe_assembler]
         jmp r15
 %endmacro
 
-%macro isr_no_error_stub 1
-isr_stub_%+%1:
+%macro isr_no_err_stub 1
+isr_stub_%1:
         push 0
         push %1
         push r15
@@ -91,7 +93,7 @@ isr_xframe_assembler:
 
 
         .no_task:
-        lea rdi, [rsp * 0x10]
+        lea rdi, [rsp + 0x10]
         extern isr_exception_handler
         lea r15, [rel isr_exception_handler]
         call r15
@@ -104,8 +106,6 @@ isr_xframe_assembler:
         pop rbp
         add rsp, 0x10
         iretq
-
-
 
 isr_no_err_stub 0
 isr_no_err_stub 1

@@ -13,12 +13,12 @@ uint64_t __irq_handlers[IDT_MAX_DESCRIPTORS];
 extern uint64_t isr_stub_table[];
 
 
-//Kernel code descriptor offset in GDT is 38 according to limine protocol.
+//Kernel code descriptor offset in GDT is 40 according to limine protocol.
 void idt_set_descriptor(uint8_t vector, uintptr_t isr, uint8_t flags, uint8_t ist) {
   idt_entry_t *descriptor = &__idt[vector];
 
   descriptor->isr_low = isr & 0xFFFF;
-  descriptor->kernel_cs = 38;
+  descriptor->kernel_cs = 40;
   descriptor->ist = ist;
   descriptor->attributes = flags;
   descriptor->isr_mid = (isr >> 16) & 0xFFFF;
@@ -31,7 +31,7 @@ void idt_assemble() {
   idtr.limit = (uint16_t)sizeof(idtr_t) * IDT_MAX_DESCRIPTORS - 1;
 
   for (uint8_t vector = 0; vector < IDT_CPU_EXCEPTION_COUNT; vector++) {
-    idt_set_descriptor(vector, isr_stub_table[vector], IDT_DESCRIPTOR_EXCEPTION, 001);
+    idt_set_descriptor(vector, isr_stub_table[vector], IDT_DESCRIPTOR_EXCEPTION, 0);
     vectors[vector] = true;
   }
 

@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include "arch/interrupts/idt.h"
 #include "arch/paging/paging.h"
 #include "drivers/uart.h"
 #include "drivers/vga/framebuffer.h"
@@ -74,6 +75,7 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memma
     tty_print(global_renderer, buf);
     tty_print(global_renderer, "\n");
   }
+
   
     //tty_print(global_renderer, "\n");
     
@@ -88,6 +90,13 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memma
     tty_print(global_renderer, "cum twat\n");
     
     tty_print(global_renderer, "cum twat\n");
+
+
+    idt_assemble();
+    tty_print(global_renderer, "IDT Initialised.\n");
+    write_serial_string("Idt Init.\n");
+    uint64_t *ad = 0x0;
+    *ad = 69;
 
     //Setup initial frame allocator.
     void *framesToAllocate = read_memory_map(memmap);
@@ -125,4 +134,7 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memma
 
     char p[20];
     tty_print(global_renderer, ultoa(*virtAddr, p, 10));
+
+
+   // __asm__("int $0x03");
 }

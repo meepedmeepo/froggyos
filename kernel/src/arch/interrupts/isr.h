@@ -45,7 +45,8 @@ typedef struct {
 
 } isr_stack_frame_t;
 
-
+__attribute__((noreturn))
+void isr_exception_handler(isr_stack_frame_t* frame);
 
 
 #endif

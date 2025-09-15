@@ -7,4 +7,5 @@ idt_reload:
         lidt [rdi] ;reload idt from first function argument
         popfq
         pop rbp
-        ret
+        sti
+        retq
