@@ -58,10 +58,13 @@ struct TTYRenderer
 void init_tty_renderer(struct TTYRenderer *ttyrenderer, struct FrameBuffer *framebuffer, struct PSF1_FONT *psf1_font);
 
 void tty_print(struct TTYRenderer *ttyrenderer, const char* str);
+void tty_break();
 void put_char(struct TTYRenderer *ttyrenderer, char symbol, unsigned int x_offset, unsigned int y_offset);
 void tty_clear(struct TTYRenderer *ttyrenderer, uint32_t color, bool reset_cursor);
 void move_tty_cursor_down(struct TTYRenderer *);
 void clear_tty_line(struct TTYRenderer *renderer, uint32_t color, uint32_t line);
-extern struct TTYRenderer *global_tty_renderer;
+extern struct TTYRenderer *global_renderer;
+
+
 
 #endif

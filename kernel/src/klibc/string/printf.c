@@ -142,7 +142,7 @@ void _vprintf(char *fmt, char *buffer, va_list args) {
 void printf(char *fmt, ...) {
   va_list args;
 
-  char buffer[1024];
+  char buffer[1024] = {0};
   va_start(args, fmt);
 
   _vprintf(fmt, buffer, args);
@@ -167,7 +167,7 @@ void sprintf(char *fmt, char *buffer, ...) {
 void serial_printf(char *fmt, ...) {
   va_list args;
 
-  char buffer[1024];
+  char buffer[1024] = {0};
 
   va_start(args, fmt);
 

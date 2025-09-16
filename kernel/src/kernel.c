@@ -70,4 +70,9 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memma
     
     serial_printf("This is a test and this is a number %ulh beans test, %s, I love %s\n", beans, testt, frog);
    // __asm__("int $0x03");
+
+    tty_break();
+    tty_break();
+    printf("F R O G E");
+    printf("beans>");
 }

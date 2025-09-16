@@ -47,7 +47,7 @@ void tty_print(struct TTYRenderer *ttyrenderer, const char *str){
         move_tty_cursor_down(ttyrenderer);
         break;
       case '\t':
-        ttyrenderer->cursor_position.x += 8;
+        ttyrenderer->cursor_position.x += 9;
         break;
       default:
         put_char(ttyrenderer, *chr, ttyrenderer->cursor_position.x, ttyrenderer->cursor_position.y);
@@ -120,4 +120,8 @@ void clear_tty_line(struct TTYRenderer *renderer, uint32_t color, uint32_t line)
       *((uint32_t *)(fbBase + 4 * (x + scanline * y))) = color;
     }
   }
+}
+
+void tty_break() {
+  tty_print(global_renderer, " \n");
 }
