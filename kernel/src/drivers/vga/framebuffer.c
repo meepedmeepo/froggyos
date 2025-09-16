@@ -57,6 +57,7 @@ void tty_print(struct TTYRenderer *ttyrenderer, const char *str){
 
     if (ttyrenderer->cursor_position.x + 8 > ttyrenderer->framebuffer->width)
     {
+      ttyrenderer->cursor_position.x = 0;
       move_tty_cursor_down(ttyrenderer);
     }
     

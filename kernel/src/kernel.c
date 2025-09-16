@@ -141,6 +141,7 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memma
     
     uint64_t beans = 3622983012831092324;
     char *testt = "wanker";
-    printf("This is a test and this is a number %ulh beans test, %s", beans, testt);
+    char *frog = "frog";
+    printf("This is a test and this is a number %ulh beans test, %s, I love %s", beans, testt, frog);
    // __asm__("int $0x03");
 }
