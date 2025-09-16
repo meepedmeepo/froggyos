@@ -51,11 +51,11 @@ void tty_print(struct TTYRenderer *ttyrenderer, const char *str){
         break;
       default:
         put_char(ttyrenderer, *chr, ttyrenderer->cursor_position.x, ttyrenderer->cursor_position.y);
-        ttyrenderer->cursor_position.x += 8;
+        ttyrenderer->cursor_position.x += 9;
         break;
     }
 
-    if (ttyrenderer->cursor_position.x + 8 > ttyrenderer->framebuffer->width)
+    if (ttyrenderer->cursor_position.x + 9 > ttyrenderer->framebuffer->width)
     {
       ttyrenderer->cursor_position.x = 0;
       move_tty_cursor_down(ttyrenderer);

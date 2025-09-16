@@ -13,89 +13,21 @@
 static struct TTYRenderer r;
 
 struct TTYRenderer *global_renderer;
-//move this shit elsewhere.
 extern char* itoa(int value, char* result, int base); 
-// // check that the base if validxx
-//     if (base < 2 || base > 36) { *result = '\0'; return result; }
-//     char* ptr = result, *ptr1 = result, tmp_char;
-//     int tmp_value;
-//     do {
-//         tmp_value = value;
-//         value /= base;
-//         *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
-//     } while ( value );
-// // Apply negative sign
-//     if (tmp_value < 0) *ptr++ = '-';
-//     *ptr-- = '\0';
-//     while(ptr1 < ptr) {
-//         tmp_char = *ptr;
-//         *ptr--= *ptr1;
-//         *ptr1++ = tmp_char;
-//     }
-//     return result;
-// }
-
-extern char* ultoa(uint64_t value, char* result, int base);//
+extern char* ultoa(uint64_t value, char* result, int base);
   
-//     if (base < 2 || base > 36) { *result = '\0'; return result; }
-//     char* ptr = result, *ptr1 = result, tmp_char;
-//     uint64_t tmp_value;
-//     do {
-//         tmp_value = value;
-//         value /= base;
-//         *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
-//     } while ( value );
-//     *ptr-- = '\0';
-//     while(ptr1 < ptr) {
-//         tmp_char = *ptr;
-//         *ptr--= *ptr1;
-//         *ptr1++ = tmp_char;
-//     }
-//     return result;
-// }
-
 void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memmap){
-  init_tty_renderer(&r,&fb, psf1_font);
-  write_serial_string("tty init\n");
-  global_renderer = &r;
+    init_tty_renderer(&r,&fb, psf1_font);
+    write_serial_string("tty init\n");
+    global_renderer = &r;
 
-  tty_clear(global_renderer, BLUE, true);
-  write_serial_string("tty cleared\n");
-  tty_print(global_renderer, "This text is very gay! \n Cum\n");
-  write_serial_string("tty printed\n");
+    tty_clear(global_renderer, BLUE, true);
 
-  tty_print(global_renderer, "Froggy Os: kernel init complete.\n");
-
-  char arr[60] = "";
-  char *buffer = arr;
-  
-  for (int i = 0; i < 31; i++) {
-    char *buf = arr;
-    buf = itoa(i, buf, 10);
-    write_serial_string(buf);
-    tty_print(global_renderer, buf);
-    tty_print(global_renderer, "\n");
-  }
-
-  
-    //tty_print(global_renderer, "\n");
-    
-    //tty_print(global_renderer, "\n");
-
-  
-    write_serial_string("\n");
-    write_serial_string(itoa(global_renderer->cursor_position.y, buffer, 10));
-
-  
-    tty_print(global_renderer, "\n");
-    tty_print(global_renderer, "cum twat\n");
-    
-    tty_print(global_renderer, "cum twat\n");
-
+    tty_print(global_renderer, "Froggy Os: vga driver init complete..\n");
 
     idt_assemble();
     tty_print(global_renderer, "IDT Initialised.\n");
-    write_serial_string("Idt Init.\n");
+    write_serial_string("IDT Init.\n");
 
     //Testing exception handler.
     //uint64_t *ad = 0x0;
@@ -108,6 +40,8 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memma
     
     struct FreeFrameList* frameList = init_frame_list((void *)frameAllocAddress, framesToAllocate);
 
+    printf("PMM init complete\n");
+    
     write_serial_string("Next Free Address: 0x");
     char res[40];
     write_serial_string(ultoa(frameList->nextFree->physAddress, res, 16));
@@ -120,28 +54,20 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memma
 
     pml4Addr += PHYSICAL_ADDRESS_OFFSET;
     
-    char x[40];
-    write_serial_string(ultoa(pml4Addr, x, 16));
-    write_serial_string("\n");
-    uint64_t val = *(uint64_t *)pml4Addr;
-
-    char y[40];
-    write_serial_string(ultoa(val, y, 10));
-
     write_serial_string("\n");
     
     map_to_page(virtAddr, pop_frame_list(frameList), frameList, NULL);
     //create_kernel_page_tables(frameList);
     *virtAddr = 69420;
 
-
-    char p[20];
-    tty_print(global_renderer, ultoa(*virtAddr, p, 10));
     printf("\n");
     
     uint64_t beans = 3622983012831092324;
     char *testt = "wanker";
     char *frog = "frog";
-    printf("This is a test and this is a number %ulh beans test, %s, I love %s", beans, testt, frog);
+    printf("This is a test and this is a number %ulh beans test, %s, I love %s\n", beans, testt, frog);
+
+    
+    serial_printf("This is a test and this is a number %ulh beans test, %s, I love %s\n", beans, testt, frog);
    // __asm__("int $0x03");
 }

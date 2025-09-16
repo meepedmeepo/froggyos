@@ -17,14 +17,6 @@ char _print_buffer[PRINTBUFLEN];
 
 extern char *itoa(int value, char *result, int base);
 
-// int countargs(char *fmt) {
-//   int count = 0;
-
-//   for (int i = 0; fmt[i] != '\n'; i++) {
-//     if (fmt[i] == '%' && fmt[i+1] )
-//   }
-// }
-
 //Internal print to buffer func.
 // SAFETY!
 // Calling function MUST call va_end after invocation of this.
