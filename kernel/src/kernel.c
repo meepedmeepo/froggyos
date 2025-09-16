@@ -8,50 +8,51 @@
 #include "memory/memorymap.h"
 #include <stdint.h>
 
+#include "klibc/string/printf.h"
 
 static struct TTYRenderer r;
 
 struct TTYRenderer *global_renderer;
 //move this shit elsewhere.
-char* itoa(int value, char* result, int base) {
-// check that the base if valid
-    if (base < 2 || base > 36) { *result = '\0'; return result; }
-    char* ptr = result, *ptr1 = result, tmp_char;
-    int tmp_value;
-    do {
-        tmp_value = value;
-        value /= base;
-        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
-    } while ( value );
-// Apply negative sign
-    if (tmp_value < 0) *ptr++ = '-';
-    *ptr-- = '\0';
-    while(ptr1 < ptr) {
-        tmp_char = *ptr;
-        *ptr--= *ptr1;
-        *ptr1++ = tmp_char;
-    }
-    return result;
-}
+extern char* itoa(int value, char* result, int base); 
+// // check that the base if validxx
+//     if (base < 2 || base > 36) { *result = '\0'; return result; }
+//     char* ptr = result, *ptr1 = result, tmp_char;
+//     int tmp_value;
+//     do {
+//         tmp_value = value;
+//         value /= base;
+//         *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+//     } while ( value );
+// // Apply negative sign
+//     if (tmp_value < 0) *ptr++ = '-';
+//     *ptr-- = '\0';
+//     while(ptr1 < ptr) {
+//         tmp_char = *ptr;
+//         *ptr--= *ptr1;
+//         *ptr1++ = tmp_char;
+//     }
+//     return result;
+// }
 
-char* ultoa(uint64_t value, char* result, int base) {
+extern char* ultoa(uint64_t value, char* result, int base);//
   
-    if (base < 2 || base > 36) { *result = '\0'; return result; }
-    char* ptr = result, *ptr1 = result, tmp_char;
-    uint64_t tmp_value;
-    do {
-        tmp_value = value;
-        value /= base;
-        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
-    } while ( value );
-    *ptr-- = '\0';
-    while(ptr1 < ptr) {
-        tmp_char = *ptr;
-        *ptr--= *ptr1;
-        *ptr1++ = tmp_char;
-    }
-    return result;
-}
+//     if (base < 2 || base > 36) { *result = '\0'; return result; }
+//     char* ptr = result, *ptr1 = result, tmp_char;
+//     uint64_t tmp_value;
+//     do {
+//         tmp_value = value;
+//         value /= base;
+//         *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+//     } while ( value );
+//     *ptr-- = '\0';
+//     while(ptr1 < ptr) {
+//         tmp_char = *ptr;
+//         *ptr--= *ptr1;
+//         *ptr1++ = tmp_char;
+//     }
+//     return result;
+// }
 
 void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memmap){
   init_tty_renderer(&r,&fb, psf1_font);
@@ -95,8 +96,10 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memma
     idt_assemble();
     tty_print(global_renderer, "IDT Initialised.\n");
     write_serial_string("Idt Init.\n");
-    uint64_t *ad = 0x0;
-    *ad = 69;
+
+    //Testing exception handler.
+    //uint64_t *ad = 0x0;
+    //*ad = 69;
 
     //Setup initial frame allocator.
     void *framesToAllocate = read_memory_map(memmap);
@@ -134,7 +137,10 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memma
 
     char p[20];
     tty_print(global_renderer, ultoa(*virtAddr, p, 10));
-
-
+    printf("\n");
+    
+    uint64_t beans = 3622983012831092324;
+    char *testt = "wanker";
+    printf("This is a test and this is a number %ulh beans test, %s", beans, testt);
    // __asm__("int $0x03");
 }
