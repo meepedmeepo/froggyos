@@ -32,7 +32,7 @@
     (p1)->next = (p0);        \
     (p0)->prev = (p1);        \
     if ((p0)->next)           \
-      (p0)->next->prev = (p0) \
+      (p0)->next->prev = (p0);\
 }
 
 //Checks if pebble is big enough to split.

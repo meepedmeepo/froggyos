@@ -1,6 +1,7 @@
 #include "bucketalloc.h"
 #include "../memory/vmm.h"
-
+#include "spinlock.h"
+#include "../memory/heap.h"
 
 void *kmalloc_init(size_t size) {
   memory_bucket_t *bucket = create_bucket(size, 0);
@@ -47,3 +48,29 @@ memory_bucket_t *create_bucket(size_t size, uint32_t flags) {
   return bucket;
 }
 
+void insert_bucket(memory_bucket_t *bucket, void *destination) {
+  memory_bucket_t *dest = (memory_bucket_t *)destination;
+
+  if(bucket && dest) {
+    acquire_spinlock(&dest->spinlock);
+
+    UPDATE_NODE(bucket, dest);
+
+    release_spinlock(&dest->spinlock);
+  }
+}
+
+
+void remove_bucket(memory_bucket_t *bucket) {
+  //Don't free initial bucket.
+  if (bucket && (bucket != (void*)KHEAPSTART)) {
+    if (bucket->prev) {
+      bucket->prev->next = bucket->next;
+    }
+    if (bucket->next) {
+      bucket->next->prev = bucket->prev;
+    }
+
+    
+  }
+}

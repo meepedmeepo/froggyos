@@ -162,3 +162,32 @@ VirtAddress identity_map_page(PhysAddress frame, struct FreeFrameList *frameAllo
   VirtAddress addr = map_to_page(frame, frame,frameAlloc, pml4VirtAddress);
   return addr;
 }
+
+struct pt_indices_t calculate_pt_indices(void *addr) {
+  
+  uint64_t pgd = ((uint64_t)addr >> 39) & 0x1ff;//Level 4 index
+  uint64_t pud = ((uint64_t)addr >> 30) & 0x1ff;//Level 3 index
+  uint64_t pmd = ((uint64_t)addr >> 21) & 0x1ff;//Level 2 index
+  uint64_t pt = ((uint64_t)addr >> 12) & 0x1ff;//Level 1 index
+
+  struct pt_indices_t res = {pgd,pud,pmd, pt};
+  return res;
+}
+
+void *get_pt_entry_frame(void *address, uint64_t entry) {
+  
+
+  return NULL;
+}
+
+void *unmap_page(void *addr) {
+  uint64_t *pml4 = active_pml4_table();
+
+  struct pt_indices_t indices = calculate_pt_indices(pml4);
+
+  struct PageTable *pt4 = (struct PageTable *)pml4;
+
+  uint64_t *pgd = (uint64_t *)page_table_phys_address(pt4->entries[indices.pgd]);
+
+  struct PageTable *pgdS = 
+}

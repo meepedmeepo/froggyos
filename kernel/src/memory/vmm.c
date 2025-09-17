@@ -41,6 +41,10 @@ void *alloc_page(void *addr) {
   return res;
 }
 
+void free_page(void *ptr) {
+  
+}
+
 void *mmap(size_t  size) {
   uintptr_t region_start = (uintptr_t)grow_heap(size);
 
@@ -53,4 +57,8 @@ void *mmap(size_t  size) {
   }
 
   return (void *)region_start;
+}
+
+void munmap(void *ptr, size_t size) {
+    
 }

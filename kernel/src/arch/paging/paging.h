@@ -32,6 +32,14 @@ typedef enum
     PAGE_NX = (1ULL << 63), // Only if EFER.NXE is enabled
 } PageAttributes;
 
+struct pt_indices_t {
+  uint64_t pgd;
+  uint64_t pud;
+  uint64_t pmd;
+  uint64_t pt;
+};
+
+struct pt_indices_t calculate_pt_indices(void *addr);
 
 inline void* phys_to_virt_translation(void * addr) {
   uintptr_t val = (uintptr_t) addr + (uintptr_t)PHYSICAL_ADDRESS_OFFSET;
@@ -92,8 +100,15 @@ inline void print_ptr_address(void *addr){
   write_serial_string(ultoa((uint64_t)addr, res, 16));
   write_serial_string("\n");
 }
-static inline void __native_flush_tlb_single(unsigned long addr) {
+inline void __native_flush_tlb_single(unsigned long addr) {
    asm volatile("invlpg (%0)" ::"r" (addr) : "memory");
 }
+
+//Returns phys address of frame that was unmapped or null if it wasn't mapped.
+void *unmap_page(void *addr);
+
+//Returns the physical address of the frame associated with given page table entry.
+// NULL means there is no mapped physical frame for that entry.
+void *get_pt_entry_frame(void *address, uint64_t entry);
 
 #endif

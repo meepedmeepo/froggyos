@@ -13,8 +13,8 @@ void init_vmm(struct FreeFrameList *pmm);
 
 //If addr is NULL then one will be assigned.
 void *alloc_page(void *addr);
-void *free_page(void* virtAddress);
+void free_page(void* virtAddress);
 
 void *mmap(size_t size);
-
+void munmap(void *ptr, size_t size);
 #endif
