@@ -3,6 +3,7 @@
 #include "framealloc.h"
 #include "heap.h"
 #include "../arch/paging/paging.h"
+#include "../klibc/string/printf.h"
 
 static struct VirtualMemoryManager vmm;
 
@@ -30,7 +31,7 @@ void *alloc_page(void *addr) {
   //TODO: implement debugging messages for when this occurs.
   
   if (!addr) {
-    //No address chosen, address to map to selected randomly-ish.
+     //No address chosen, address to map to selected randomly-ish.
     // TODO: implement selecting new address.
     return NULL;
   }
@@ -45,7 +46,7 @@ void free_page(void *ptr) {
   
 }
 
-void *mmap(size_t  size) {
+void *mmap(size_t size) {
   uintptr_t region_start = (uintptr_t)grow_heap(size);
 
   if (!region_start) {
@@ -60,5 +61,13 @@ void *mmap(size_t  size) {
 }
 
 void munmap(void *ptr, size_t size) {
-    
+  for(uintptr_t addr = (uintptr_t)ptr; addr < (uintptr_t)ptr + size; addr += 0x1000) {
+    void *frame = unmap_page((void *) addr);
+
+    if(frame) {
+      push_frame_list(vmm.frameAlloc, (uint64_t)frame);
+    } else {
+      serial_printf("Error: Couldn't Unmap page at address %ulh", (uint64_t)addr);
+    }
+  }
 }

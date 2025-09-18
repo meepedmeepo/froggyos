@@ -180,14 +180,48 @@ void *get_pt_entry_frame(void *address, uint64_t entry) {
   return NULL;
 }
 
+static uint64_t *fetch_page_table_entry(void *addr) {
+  uint64_t *pml4Addr = active_pml4_table();
+
+  struct pt_indices_t indices = calculate_pt_indices(addr);
+  uint64_t index_array[4] = {indices.pgd, indices.pud, indices.pmd, indices.pt};
+
+  uint64_t* table_address = NULL;
+  struct PageTable *table = NULL;
+  uint64_t *entry = NULL;
+
+  for(int x = 0; x < 4; x++) {
+    if(x == 0) {
+      table_address = active_pml4_table();
+    }
+
+    table = (struct PageTable *)table_address;
+    entry = &table->entries[index_array[x]];
+
+    if (!is_page_table_present(*entry)) {
+      return NULL;
+    }
+
+    if (x == 3) return entry;
+    
+    table_address = (uint64_t *)page_table_phys_address(*entry);
+
+    table_address = phys_to_virt_translation(table_address);
+  }
+
+  return NULL;//Unreachable.
+}
+
 void *unmap_page(void *addr) {
-  uint64_t *pml4 = active_pml4_table();
+  uint64_t *entry = fetch_page_table_entry(addr);
 
-  struct pt_indices_t indices = calculate_pt_indices(pml4);
+  if(!entry) return NULL;
 
-  struct PageTable *pt4 = (struct PageTable *)pml4;
+  uint64_t *frameAddr = (uint64_t *)page_table_phys_address(*entry);
+  if(!frameAddr) return NULL;
 
-  uint64_t *pgd = (uint64_t *)page_table_phys_address(pt4->entries[indices.pgd]);
+  //Removes entry from pt.
+  *entry = 0;
 
-  struct PageTable *pgdS = 
+  return NULL;
 }
