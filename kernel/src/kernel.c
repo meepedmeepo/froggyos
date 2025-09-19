@@ -24,7 +24,7 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memma
     write_serial_string("tty init\n");
     global_renderer = &r;
 
-    tty_clear(global_renderer, BLUE, true);
+    tty_clear(global_renderer, BGREEN, true);
 
     tty_print(global_renderer, "Froggy Os: vga driver init complete..\n");
 
@@ -63,39 +63,23 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memma
     //create_kernel_page_tables(frameList);
     *virtAddr = 69420;
 
-    printf("\n");
-    
-    uint64_t beans = 3622983012831092324;
-    char *testt = "wanker";
-    char *frog = "frog";
-    printf("This is a test and this is a number %ulh beans test, %s, I love %s\n", beans, testt, frog);
-
-    
-    serial_printf("This is a test and this is a number %ulh beans test, %s, I love %s\n", beans, testt, frog);
-   // __asm__("int $0x03");
-
-    tty_break();
-    printf("F R O G E");
-    printf("beans>");
-
     init_heap();
-    
+    println("Init heap.");
     init_vmm(frameList);
     serial_printf("Init VMM\n");
-    printf("Init VMM.");
+    println("Init VMM.");
 
-    //grow_heap(0x1000);
-    
     kmalloc_init(0x1000);
+    tty_break();
     serial_printf("Kmalloc init\n");
-
-    uint64_t *number = (uint64_t *)kmalloc(sizeof(uint64_t));
-
-    serial_printf(" \nmalloced address %p \n", (uintptr_t)number);
+    println("KMalloc Initialised.");
     
+    uint64_t *number = (uint64_t *)kmalloc(sizeof(uint64_t));
+    serial_printf(" \nmalloced address %p \n", (uintptr_t)number);
     *number = 10023;
-
-    printf("Number = %ul", *number);
-
+    println("Number = %ul", *number);
     kfree(number);
+
+    tty_break();
+    printf("F R O G E  L O A D I N G\n");
 }

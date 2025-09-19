@@ -157,8 +157,6 @@ void printf(char *fmt, ...) {
   va_end(args);
 }
 
-
-
 void sprintf(char *fmt, char *buffer, ...) {
   va_list args;
 
@@ -182,4 +180,20 @@ void serial_printf(char *fmt, ...) {
   va_end(args);
 
   write_serial_string(buffer);
+}
+
+
+void println(char *fmt, ...) {
+  va_list args;
+
+  char buffer[1024] = {0};
+  memset(buffer,0, sizeof(char) * 1024);
+
+  va_start(args, fmt);
+
+  _vprintf(fmt, buffer, args);
+
+  tty_print(global_renderer, buffer);
+  tty_break();
+  va_end(args);
 }

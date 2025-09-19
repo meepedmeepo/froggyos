@@ -11,7 +11,12 @@ void printf(char *fmt, ...);
 // , else it will overflow.
 void sprintf(char *fmt, char *buffer, ...);
 
-
+//SAFETY! see printf above ^
+// Prints formatted string to serial output.
 void serial_printf(char *fmt, ...);
 
+//SAFETY! see printf ^
+// Works exactly the same as printf but adds a new line
+// character to the end of the output.
+void println(char *fmt, ...);
 #endif

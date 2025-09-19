@@ -28,7 +28,7 @@ void move_tty_cursor_down(struct TTYRenderer *renderer) {
 
 void init_tty_renderer(struct TTYRenderer *ttyrenderer, struct FrameBuffer *framebuffer, struct PSF1_FONT *psf1_font)
 {
-  ttyrenderer->color = WHITE;
+  ttyrenderer->color = TBLACK;
 
   ttyrenderer->cursor_position.x = 0;
   ttyrenderer->cursor_position.y = 0;
