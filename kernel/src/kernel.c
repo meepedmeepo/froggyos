@@ -46,7 +46,7 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memma
     printf("PMM init complete\n");
     
     write_serial_string("Next Free Address: 0x");
-    char res[40];
+    char res[60];
     write_serial_string(ultoa(frameList->nextFree->physAddress, res, 16));
     write_serial_string("!\n");
 
@@ -89,13 +89,13 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memma
     kmalloc_init(0x1000);
     serial_printf("Kmalloc init\n");
 
-    uint64_t *t = (uint64_t *)kmalloc(sizeof(uint64_t));
+    uint64_t *number = (uint64_t *)kmalloc(sizeof(uint64_t));
 
-    serial_printf(" \nmalloced address %p \n", t);
+    serial_printf(" \nmalloced address %p \n", (uintptr_t)number);
     
-    *t = 63;
+    *number = 10023;
 
-    printf("Number = %ul", *t);
+    printf("Number = %ul", *number);
 
-    kfree(t);
+    kfree(number);
 }

@@ -1,7 +1,5 @@
 #include "printf.h"
-#include "iltoa.h"
-#include "uitoa.h"
-#include "ultoa.h"
+#include "itoa.h"
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -15,7 +13,7 @@ extern struct TTYRenderer* global_renderer;
 
 char _print_buffer[PRINTBUFLEN];
 
-extern char *itoa(int value, char *result, int base);
+extern void *memset(void *, int, unsigned long);
 
 //Internal print to buffer func.
 // SAFETY!
@@ -95,21 +93,23 @@ void _vprintf(char *fmt, char *buffer, va_list args) {
 
           char res[100] = {0};
 
+          memset(res,0, sizeof(char) * 100);
+
           if (isPtr) {
             uintptr_t val = va_arg(args, uintptr_t);
-            ultoa((uint64_t)val, res, 16);
+            utoa((uint64_t)val, res, 16);
           }else if (sign == false && length == 32) {
             uint32_t val = va_arg(args, uint32_t);
-            uitoa(val, res, base);
+            utoa((uint32_t)val, res, base);
           } else if (sign == true && length == 32) {
             int32_t val = va_arg(args, int32_t);
-            itoa(val, res, base);
+            itoa((int64_t)val, res, base);
           } else if (sign == false && length == 64) {
             uint64_t val = va_arg(args, uint64_t);
-            ultoa(val, res, base);
+            utoa(val, res, base);
           } else if (sign == true && length == 64) {
             int64_t val = va_arg(args, int64_t);
-            iltoa(val, res, base);
+            itoa(val, res, base);
           }
 
           //Insert result into buffer.
@@ -120,8 +120,8 @@ void _vprintf(char *fmt, char *buffer, va_list args) {
             *buffer = 'x';
             buffer++;
           }
-          while (*res_ptr) {
-            *buffer = *res;
+          while (*res_ptr != '\0') {
+            *buffer = *res_ptr;
             buffer ++;
             res_ptr++;
           }
@@ -146,6 +146,8 @@ void printf(char *fmt, ...) {
   va_list args;
 
   char buffer[1024] = {0};
+  memset(buffer,0, sizeof(char) * 1024);
+
   va_start(args, fmt);
 
   _vprintf(fmt, buffer, args);
@@ -171,7 +173,8 @@ void serial_printf(char *fmt, ...) {
   va_list args;
 
   char buffer[1024] = {0};
-
+  
+  memset(buffer,0, sizeof(char) * 1024);
   va_start(args, fmt);
 
   _vprintf(fmt, buffer,args);
