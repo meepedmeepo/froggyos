@@ -3,12 +3,15 @@
 #include "arch/paging/paging.h"
 #include "drivers/uart.h"
 #include "drivers/vga/framebuffer.h"
+#include "klibc/bucketalloc.h"
 #include "limine.h"
 #include "memory/framealloc.h"
+#include "memory/heap.h"
 #include "memory/memorymap.h"
 #include <stdint.h>
 
 #include "klibc/string/printf.h"
+#include "memory/vmm.h"
 
 static struct TTYRenderer r;
 
@@ -72,7 +75,27 @@ void kernel_init(struct FrameBuffer fb, struct PSF1_FONT *psf1_font, void *memma
    // __asm__("int $0x03");
 
     tty_break();
-    tty_break();
     printf("F R O G E");
     printf("beans>");
+
+    init_heap();
+    
+    init_vmm(frameList);
+    serial_printf("Init VMM\n");
+    printf("Init VMM.");
+
+    //grow_heap(0x1000);
+    
+    kmalloc_init(0x1000);
+    serial_printf("Kmalloc init\n");
+
+    uint64_t *t = (uint64_t *)kmalloc(sizeof(uint64_t));
+
+    serial_printf(" \nmalloced address %p \n", t);
+    
+    *t = 63;
+
+    printf("Number = %ul", *t);
+
+    kfree(t);
 }

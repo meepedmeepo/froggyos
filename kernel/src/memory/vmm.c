@@ -9,6 +9,10 @@ static struct VirtualMemoryManager vmm;
 
 void init_vmm(struct FreeFrameList *pmm) {
   vmm.frameAlloc = pmm;
+  if (!alloc_page((void *)KHEAPSTART))
+  {
+    serial_printf("Couldn't alloc page at heap start.\n");    
+  }
   write_serial_string("VMM Initialised.\n");
 }
 
@@ -30,9 +34,10 @@ void *alloc_page(void *addr) {
   if (!frame) return NULL;//Frame list empty so operation fails.
   //TODO: implement debugging messages for when this occurs.
   
-  if (!addr) {
+  if (addr == NULL) {
      //No address chosen, address to map to selected randomly-ish.
     // TODO: implement selecting new address.
+    serial_printf("Err: Given address for page is null\n");
     return NULL;
   }
 
@@ -50,8 +55,11 @@ void *mmap(size_t size) {
   uintptr_t region_start = (uintptr_t)grow_heap(size);
 
   if (!region_start) {
+    serial_printf("Err: Heap region start is NULL \n");
     return NULL;
   }
+
+  printf("Region start %ulh", (uint64_t)region_start);
 
   for (uintptr_t addr = region_start; addr < region_start + size; addr += 0x1000) {
     alloc_page((void *)addr);

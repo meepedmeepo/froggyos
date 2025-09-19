@@ -78,13 +78,13 @@ struct memory_pebble_t {
 #pragma pack(pop)
 
 memory_bucket_t *create_bucket(size_t size, const uint32_t flags);
-memory_pebble_t *place_pebble(memory_bucket_t *bucket, memory_pebble_t pebble);
+memory_pebble_t *place_pebble(memory_bucket_t *bucket, memory_pebble_t *pebble);
 memory_pebble_t *split_pebble(memory_pebble_t *pebble, memory_pebble_t *src);
 
 
 //Public interface.
 // TODO: Considering moving this into a seperate file?
-void *kmalloc(size_t size, uint32_t alignment, uint32_t flags);
+void *kmalloc(size_t size);
 void *krealloc(void *ptr, size_t size);
 void kfree(void * ptr);
 

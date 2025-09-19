@@ -1,9 +1,11 @@
 #ifndef _K_HEAP_H
 #define _K_HEAP_H
-
+#include <stdint.h>
 #include <stddef.h>
 
-#define KHEAPSTART 0xffffffff0000000UL
+extern char kEnd;
+
+ static uintptr_t KHEAPSTART = (uintptr_t)&kEnd;
 
 
 void init_heap();

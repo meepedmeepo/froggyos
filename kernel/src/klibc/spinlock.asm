@@ -1,11 +1,11 @@
 
 section .text
 global _acquire_spinlock
-.preamble:
-        mov qword rax, rdi
+;.preamble:
+;        mov qword rax, rdi
 
 _acquire_spinlock:
-        lock bts dword [rax],0
+        lock bts dword [rdi],0
         jc .spin_with_pause
         mov dword rax, 0
         ret
@@ -17,9 +17,9 @@ _acquire_spinlock:
         jmp _acquire_spinlock
 
 global _release_spinlock
-.preamble:
-        mov qword rax, rdi
-release_spinlock:
-        mov dword [rax],0
-        mov dword rax,0
+;.preamble:
+;        mov qword rax, rdi
+_release_spinlock:
+        mov dword [rdi],0
+       ; mov dword rax,0
         ret

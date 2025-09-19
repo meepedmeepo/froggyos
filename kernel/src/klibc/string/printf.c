@@ -59,7 +59,7 @@ void _vprintf(char *fmt, char *buffer, va_list args) {
           int base = 10;
           bool sign = true;
           int length = 32;
-
+          bool isPtr = false;
           do {
             switch(*fmt){
               case 'i'://32 bit int
@@ -68,6 +68,7 @@ void _vprintf(char *fmt, char *buffer, va_list args) {
                 break;
               case 'p'://64 bit pointer
                 base = 16;
+                isPtr = true;
                 sign = false;
                 length = 64;
                 finished = true;
@@ -92,10 +93,12 @@ void _vprintf(char *fmt, char *buffer, va_list args) {
             }
           } while (!finished);
 
-          char res[40] = {0};
+          char res[100] = {0};
 
-          
-          if (sign == false && length == 32) {
+          if (isPtr) {
+            uintptr_t val = va_arg(args, uintptr_t);
+            ultoa((uint64_t)val, res, 16);
+          }else if (sign == false && length == 32) {
             uint32_t val = va_arg(args, uint32_t);
             uitoa(val, res, base);
           } else if (sign == true && length == 32) {
